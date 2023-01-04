@@ -4,16 +4,18 @@ package com.example.instagram.fragment.menu
 import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
-import android.os.CountDownTimer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.instagram.R
 import com.example.instagram.adapter.HomeAdapter
 import com.example.instagram.model.Posts
+import com.example.instagram.network.authManager.AuthManager
 import com.example.instagram.network.connections.HomeListener
-import kotlinx.android.synthetic.main.fragment_home.*
+import com.example.instagram.network.databaseManager.DBPostsHandler
+import com.example.instagram.network.databaseManager.DatabaseManager
 import kotlinx.android.synthetic.main.fragment_home.view.*
 
 
@@ -23,6 +25,8 @@ import kotlinx.android.synthetic.main.fragment_home.view.*
 class HomeFragment : BaseFragment() {
 
     private var listener: HomeListener?=null
+    lateinit var recyclerView: RecyclerView
+    var feeds = ArrayList<Posts>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -36,37 +40,46 @@ class HomeFragment : BaseFragment() {
 
     private fun initViews(view: View) {
 
-        view.recyclerview_home_id.layoutManager = LinearLayoutManager(activity)
+        recyclerView = view.findViewById(R.id.recyclerview_home_id)
+        recyclerView.layoutManager = LinearLayoutManager(activity)
         setCamera(view)
-        refreshAdapter(loadPost())
-        countDownTimer()
+
+        loadMyFeeds()
     }
 
-    fun countDownTimer() {
+    private fun loadMyFeeds() {
+
         val dialog = Dialog(requireContext())
         showLoading(dialog)
-        val countDownTimer = object : CountDownTimer(1000, 1000) {
-            override fun onTick(millisUntilFinished: Long) {}
-            override fun onFinish() {
+
+        val authManager = AuthManager()
+        val uid = authManager.currentUser()!!.uid
+
+        val databaseManager =  DatabaseManager()
+        databaseManager.loadFeeds(uid,object :DBPostsHandler{
+
+            override fun onSuccess(posts: ArrayList<Posts>) {
+
+                dismissLoading(dialog)
+                feeds.clear()
+                feeds.addAll(posts)
+                refreshAdapter(feeds)
+
+            }
+
+            override fun onError(exception: Exception) {
                 dismissLoading(dialog)
             }
-        }.start()
+        })
+
     }
+
 
     private fun refreshAdapter(posts: ArrayList<Posts>) {
         val adapter = HomeAdapter(activity, posts)
-        recyclerview_home_id.adapter = adapter
+        recyclerView.adapter = adapter
     }
 
-    private fun loadPost(): ArrayList<Posts> {
-        val list: ArrayList<Posts> = ArrayList()
-        list.add(Posts("https://manchestersightseeingtours.com/wp-content/uploads/Manchester-United-Football-Ground-NCNManchester-Marketing-1-525x350.jpg"))
-        list.add(Posts("https://www.si.com/.image/c_limit%2Ccs_srgb%2Cq_auto:good%2Cw_700/MTkxMTk2ODg3MjA5MzU0NDc1/imago1011329909h.webp"))
-        list.add(Posts("https://i2-prod.manchestereveningnews.co.uk/incoming/article23387908.ece/ALTERNATES/s810/0_GettyImages-1384570282.jpg"))
-        list.add(Posts("https://i2-prod.football.london/incoming/article23788990.ece/ALTERNATES/s458/0_Marcus-Rashford.jpg"))
-        list.add(Posts("https://i2-prod.manchestereveningnews.co.uk/sport/football/football-news/article23692634.ece/ALTERNATES/s615b/0_GettyImages-1313311867.jpg"))
-        return list
-    }
 
     private fun setCamera(view: View) {
         view.home_camera_id.setOnClickListener { listener?.scrollToUpload() }

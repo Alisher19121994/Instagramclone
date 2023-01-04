@@ -25,8 +25,18 @@ class HomeAdapter(var homeFragment: FragmentActivity?, var listOfPosts: ArrayLis
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val posts: Posts = listOfPosts[position]
         if (holder is PostsViewHolder) {
-            val post = holder.post
-            Glide.with(homeFragment!!).load(posts.image).into(post)
+
+            holder.fullname.text = posts.fullname
+            holder.time.text = posts.currentDate
+            holder.caption.text = posts.caption
+
+
+            Glide.with(homeFragment!!).load(posts.userImage)
+                .placeholder(R.drawable.defaultimage)
+                .error(R.drawable.defaultimage)
+                .into(holder.profile)
+
+            Glide.with(homeFragment!!).load(posts.image).into(holder.post)
         }
     }
 
@@ -35,14 +45,17 @@ class HomeAdapter(var homeFragment: FragmentActivity?, var listOfPosts: ArrayLis
     }
 
     class PostsViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        var profile: ShapeableImageView? = null
+        var profile: ShapeableImageView = view.findViewById(R.id.home_image_round_id)
         var post: ShapeableImageView = view.findViewById(R.id.home_view_full_image_id)
-        var fullname: TextView? = null
-        var time: TextView? = null
-        var caption: TextView? = null
-        var more: ImageView? = null
-        var liked: ImageView? = null
-        var share: ImageView? = null
+
+        var fullname: TextView = view.findViewById(R.id.home__view_fullname_id)
+        var time: TextView = view.findViewById(R.id.home__view_time_id)
+        var caption: TextView = view.findViewById(R.id.home_view_et_caption_id)
+        var more: ImageView = view.findViewById(R.id.home_view_more_id)
+
+       // var share: ImageView = view.findViewById(R.id.iv_share_id)
+       // var liked: ImageView = view.findViewById(R.id.home_view_more_id)
+
 
 
     }

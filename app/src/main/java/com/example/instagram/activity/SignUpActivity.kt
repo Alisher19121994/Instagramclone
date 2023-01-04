@@ -1,17 +1,16 @@
 package com.example.instagram.activity
 
+import android.app.Dialog
 import android.os.Bundle
-import android.view.View
 import android.widget.EditText
-import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatButton
 import com.example.instagram.R
 import com.example.instagram.model.User
 import com.example.instagram.network.authManager.AuthHandler
 import com.example.instagram.network.authManager.AuthManager
-import com.example.instagram.network.database.DBUserHandler
-import com.example.instagram.network.database.DatabaseManager
+import com.example.instagram.network.databaseManager.DBUserHandler
+import com.example.instagram.network.databaseManager.DatabaseManager
 import com.example.instagram.utils.Extension.toast
 
 
@@ -26,7 +25,6 @@ class SignUpActivity : BaseActivity() {
     private lateinit var email: EditText
     private lateinit var password: EditText
     private lateinit var confirmPassword: EditText
-    private lateinit var progressBar: ProgressBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,7 +37,6 @@ class SignUpActivity : BaseActivity() {
     }
 
     private fun openPage() {
-        progressBar = findViewById(R.id.progress_circular_sign_up_id)
         fullname = findViewById(R.id.sign_up_fullname_id)
         email = findViewById(R.id.sign_up_email_id)
         password = findViewById(R.id.sign_up_password_id)
@@ -71,29 +68,33 @@ class SignUpActivity : BaseActivity() {
 
     private fun firebaseSignUp(user: User) {
 
-        progressBar.visibility = View.VISIBLE
+        val dialog = Dialog(this)
+        showLoading(dialog)
         val authManager = AuthManager()
+
         authManager.signUp(user.emailAddress, user.password, object : AuthHandler {
-            override fun onSuccess(uId: String?) {
 
-                user.uid = uId
+            override fun onSuccess(uId: String) {
+                user.uid = uId // connection
 
+                // saved database in onSuccess
                 val databaseManager = DatabaseManager()
                 databaseManager.storeUser(user, object : DBUserHandler {
+
                     override fun onSuccess(user: User?) {
-                        progressBar.visibility = View.GONE
+                        dismissLoading(dialog)
                         openMainActivity(context)
                     }
 
-                    override fun onError(exception: Exception?) {
-                        progressBar.visibility = View.GONE
+                    override fun onError(exception: Exception) {
+                        dismissLoading(dialog)
                     }
                 })
-                toast("Signed up")
+                toast("Signed Up")
             }
 
             override fun onError(exception: Exception?) {
-                progressBar.visibility = View.GONE
+                toast("Failed")
             }
         })
     }

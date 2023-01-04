@@ -7,9 +7,7 @@
     android:orientation="vertical"
     tools:context=".activity.SignUpActivity">
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+
 
 
         <LinearLayout
@@ -126,18 +124,4 @@
             </LinearLayout>
 
         </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center_vertical|center_horizontal"
-            android:visibility="gone">
-
-            <ProgressBar
-                android:id="@+id/progress_circular_sign_up_id"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:indeterminateTint="#000000" />
-
-        </LinearLayout>
-    </FrameLayout>
 </LinearLayout>

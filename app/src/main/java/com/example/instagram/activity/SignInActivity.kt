@@ -1,5 +1,6 @@
 package com.example.instagram.activity
 
+import android.app.Dialog
 import android.os.Bundle
 import android.view.View
 import android.widget.EditText
@@ -21,7 +22,6 @@ class SignInActivity : BaseActivity() {
 
     private lateinit var editTextEmail: EditText
     private lateinit var editTextPassword: EditText
-    private lateinit var progressBar: ProgressBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,7 +34,6 @@ class SignInActivity : BaseActivity() {
     }
 
     private fun openPage() {
-        progressBar = findViewById(R.id.progress_circular_sign_in_id)
         editTextEmail = findViewById(R.id.sign_in_email_id)
         editTextPassword = findViewById(R.id.sign_in_password_id)
 
@@ -61,22 +60,24 @@ class SignInActivity : BaseActivity() {
         }
     }
 
-    private fun fireBaseSignIn(email: String?, password: String?) {
-        progressBar.visibility = View.VISIBLE
-        val authManager = AuthManager()
-        if (email != null) {
-            if (password != null) {
-                authManager.signIn(email, password, object : AuthHandler {
-                    override fun onSuccess(uId: String?) {
-                        progressBar.visibility = View.GONE
-                        openMainActivity(context)
-                    }
+    private fun fireBaseSignIn(email: String, password: String) {
+        val dialog = Dialog(this)
+        showLoading(dialog)
 
-                    override fun onError(exception: Exception?) {
-                        progressBar.visibility = View.GONE
-                    }
-                })
-            }
-        }
+        val authManager = AuthManager()
+            authManager.signIn(email, password, object : AuthHandler {
+
+                override fun onSuccess(uId: String) {
+                    dismissLoading(dialog)
+                    toast("Signed In")
+                    openMainActivity(context)
+                }
+
+                override fun onError(exception: Exception?) {
+                    dismissLoading(dialog)
+                    toast("Failed")
+                }
+            })
+
     }
 }

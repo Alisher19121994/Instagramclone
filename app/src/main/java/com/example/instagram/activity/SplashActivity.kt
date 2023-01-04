@@ -11,7 +11,7 @@ import com.example.instagram.network.authManager.AuthManager
 
 /**
  * In this SplashActivity, user can visit to SignInActivity or MainActivity
- * within a few secund
+ * within a few second
  */
 class SplashActivity : BaseActivity() {
 
@@ -41,10 +41,9 @@ class SplashActivity : BaseActivity() {
                 val authManager = AuthManager()
                 if (authManager.isSignedIn()) {
                     openMainActivity(this@SplashActivity)
-                    Log.d(TAG, "XATO: ")
                 } else {
                     openSignInActivity(this@SplashActivity)
-                    Log.d(TAG, "XATO: ")
+
                 }
             }
         }.start()

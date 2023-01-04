@@ -1,6 +1,7 @@
 package com.example.instagram.utils
 
 import android.app.Activity
+import android.app.Application
 import android.os.Message
 import android.widget.Toast
 
@@ -10,4 +11,5 @@ object Extension {
         Toast.makeText(this,message,Toast.LENGTH_SHORT).show()
 
     }
+
 }

@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.instagram.R
 import com.example.instagram.model.User
 import com.google.android.material.imageview.ShapeableImageView
@@ -24,6 +25,11 @@ class SearchAdapter(var searchFragment: FragmentActivity?, var listOfPosts: Arra
         if (holder is UserViewHolder) {
             holder.fullname.text = user.fullname
             holder.emailAddress.text = user.emailAddress
+
+            Glide.with(searchFragment!!).load(user.userImage)
+                .placeholder(R.drawable.defaultimage)
+                .error(R.drawable.defaultimage)
+                .into(holder.profile)
         }
     }
 

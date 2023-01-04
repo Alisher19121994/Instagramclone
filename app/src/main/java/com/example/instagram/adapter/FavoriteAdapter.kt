@@ -8,18 +8,18 @@ import android.widget.TextView
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.instagram.R
 import com.example.instagram.model.Posts
 import com.google.android.material.imageview.ShapeableImageView
 
 
-class FavoriteAdapter(private var favoriteFragment: FragmentActivity, private var listOfPosts: ArrayList<Posts>) :
+class FavoriteAdapter( var favoriteFragment: FragmentActivity?, private var listOfPosts: ArrayList<Posts>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        val view: View =
-            LayoutInflater.from(parent.context).inflate(com.example.instagram.R.layout.favorite_view, parent, false)
-        return HomeAdapter.PostsViewHolder(view)
+        val view: View = LayoutInflater.from(parent.context).inflate(com.example.instagram.R.layout.favorite_view, parent, false)
+        return PostsViewHolder(view)
     }
 
 
@@ -28,7 +28,7 @@ class FavoriteAdapter(private var favoriteFragment: FragmentActivity, private va
 
         if (holder is PostsViewHolder) {
             val post = holder.post
-            Glide.with(favoriteFragment).load(image).into(post)
+            Glide.with(favoriteFragment!!).load(image.image).into(post)
         }
     }
 
@@ -38,7 +38,7 @@ class FavoriteAdapter(private var favoriteFragment: FragmentActivity, private va
 
     class PostsViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         var profile: ShapeableImageView? = null
-        var post: ShapeableImageView = view.findViewById(com.example.instagram.R.id.favorite_view_full_image_id)
+        var post: ShapeableImageView = view.findViewById(R.id.favorite_view_full_image_id)
         var fullname: TextView? = null
         var time: TextView? = null
         var caption: TextView? = null

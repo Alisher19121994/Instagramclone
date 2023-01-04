@@ -31,12 +31,12 @@ class FavoriteFragment : BaseFragment() {
     private fun initViews(view: View) {
         view.recyclerView_favorite_id.layoutManager = LinearLayoutManager(activity)
 
-        refreshAdapter(loadData())
+        refreshAdapter(view,loadData())
     }
 
-    private fun refreshAdapter(posts: ArrayList<Posts>) {
+    private fun refreshAdapter(view: View,posts: ArrayList<Posts>) {
         val adapter = FavoriteAdapter(requireActivity(), posts)
-        recyclerView_favorite_id.adapter = adapter
+        view.recyclerView_favorite_id.adapter = adapter
     }
 
     private fun loadData(): ArrayList<Posts> {
