@@ -165,6 +165,7 @@ class DatabaseManager {
                     //val isLiked = document.getString("isLiked")
                     //if (isLiked ==null) isLiked =false
 
+                    //val post = Posts(id!!,caption!!,postImage!!)
                     val post = Posts(id.toString(), caption.toString(), postImage.toString())
                     post.uid = userid.toString()
                     post.fullname = fullname.toString()
