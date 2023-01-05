@@ -13,6 +13,9 @@ import com.example.instagram.activity.SignInActivity
  * create an instance of this fragment.
  */
 open class BaseFragment : Fragment() {
+
+
+
     fun showLoading(dialog: Dialog) {
         dialog.setContentView(R.layout.progress_bar)
         dialog.setCancelable(false)

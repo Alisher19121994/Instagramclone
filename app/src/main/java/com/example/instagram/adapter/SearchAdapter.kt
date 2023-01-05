@@ -8,10 +8,11 @@ import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.instagram.R
+import com.example.instagram.fragment.menu.SearchFragment
 import com.example.instagram.model.User
 import com.google.android.material.imageview.ShapeableImageView
 
-class SearchAdapter(var searchFragment: FragmentActivity?, var listOfPosts: ArrayList<User>) :
+class SearchAdapter(var searchFragment: SearchFragment?, var listOfPosts: ArrayList<User>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -23,8 +24,25 @@ class SearchAdapter(var searchFragment: FragmentActivity?, var listOfPosts: Arra
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val user: User = listOfPosts[position]
         if (holder is UserViewHolder) {
+
             holder.fullname.text = user.fullname
             holder.emailAddress.text = user.emailAddress
+            holder.follow.setOnClickListener {
+
+                if (!user.isFollowed) {
+                    holder.follow.text = searchFragment!!.getString(R.string.following)
+                } else {
+                    holder.follow.text = searchFragment!!.getString(R.string.follow)
+                }
+                searchFragment!!.followOrUnfollow(user)
+            }
+
+            if (!user.isFollowed) {
+                holder.follow.text = searchFragment!!.getString(R.string.follow)
+            } else {
+                holder.follow.text = searchFragment!!.getString(R.string.following)
+
+            }
 
             Glide.with(searchFragment!!).load(user.userImage)
                 .placeholder(R.drawable.defaultimage)
@@ -51,3 +69,5 @@ class SearchAdapter(var searchFragment: FragmentActivity?, var listOfPosts: Arra
         }
     }
 }
+
+

@@ -24,7 +24,7 @@ import kotlinx.android.synthetic.main.fragment_home.view.*
  */
 class HomeFragment : BaseFragment() {
 
-    private var listener: HomeListener?=null
+    private var listener: HomeListener? = null
     lateinit var recyclerView: RecyclerView
     var feeds = ArrayList<Posts>()
 
@@ -38,11 +38,19 @@ class HomeFragment : BaseFragment() {
         return view
     }
 
+    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
+
+        if (isVisibleToUser && feeds.size > 0){
+            loadMyFeeds()
+        }
+    }
+
     private fun initViews(view: View) {
 
         recyclerView = view.findViewById(R.id.recyclerview_home_id)
         recyclerView.layoutManager = LinearLayoutManager(activity)
-        setCamera(view)
+
+        view.home_camera_id.setOnClickListener { listener?.scrollToUpload() }
 
         loadMyFeeds()
     }
@@ -55,8 +63,8 @@ class HomeFragment : BaseFragment() {
         val authManager = AuthManager()
         val uid = authManager.currentUser()!!.uid
 
-        val databaseManager =  DatabaseManager()
-        databaseManager.loadFeeds(uid,object :DBPostsHandler{
+        val databaseManager = DatabaseManager()
+        databaseManager.loadFeeds(uid, object : DBPostsHandler {
 
             override fun onSuccess(posts: ArrayList<Posts>) {
 
@@ -80,10 +88,6 @@ class HomeFragment : BaseFragment() {
         recyclerView.adapter = adapter
     }
 
-
-    private fun setCamera(view: View) {
-        view.home_camera_id.setOnClickListener { listener?.scrollToUpload() }
-    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)

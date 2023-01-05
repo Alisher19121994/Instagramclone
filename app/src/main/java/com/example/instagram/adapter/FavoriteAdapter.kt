@@ -13,12 +13,16 @@ import com.example.instagram.model.Posts
 import com.google.android.material.imageview.ShapeableImageView
 
 
-class FavoriteAdapter( var favoriteFragment: FragmentActivity?, private var listOfPosts: ArrayList<Posts>) :
+class FavoriteAdapter(
+    var favoriteFragment: FragmentActivity?,
+    private var listOfPosts: ArrayList<Posts>
+) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        val view: View = LayoutInflater.from(parent.context).inflate(com.example.instagram.R.layout.favorite_view, parent, false)
+        val view: View =
+            LayoutInflater.from(parent.context).inflate(R.layout.favorite_view, parent, false)
         return PostsViewHolder(view)
     }
 
@@ -27,8 +31,18 @@ class FavoriteAdapter( var favoriteFragment: FragmentActivity?, private var list
         val image = listOfPosts[position]
 
         if (holder is PostsViewHolder) {
-            val post = holder.post
-            Glide.with(favoriteFragment!!).load(image.image).into(post)
+
+
+            holder.fullname.text = image.fullname
+            holder.time.text = image.currentDate
+            holder.caption.text = image.caption
+
+
+            Glide.with(favoriteFragment!!).load(image.userImage)
+                .placeholder(R.drawable.defaultimage)
+                .error(R.drawable.defaultimage)
+                .into(holder.profile)
+            Glide.with(favoriteFragment!!).load(image.image).into(holder.post)
         }
     }
 
@@ -37,14 +51,14 @@ class FavoriteAdapter( var favoriteFragment: FragmentActivity?, private var list
     }
 
     class PostsViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        var profile: ShapeableImageView? = null
+        var profile: ShapeableImageView = view.findViewById(R.id.favorite_image_round_id)
         var post: ShapeableImageView = view.findViewById(R.id.favorite_view_full_image_id)
-        var fullname: TextView? = null
-        var time: TextView? = null
-        var caption: TextView? = null
-        var more: ImageView? = null
-        var liked: ImageView? = null
-        var share: ImageView? = null
+        var fullname: TextView = view.findViewById(R.id.favorite_view_fullname_id)
+        var time: TextView = view.findViewById(R.id.favorite_view_time_id)
+        var caption: TextView = view.findViewById(R.id.favorite_view_et_caption_id)
+        //  var more: ImageView = view.findViewById(R.id.favorite_view_more_id)
+        //  var liked: ImageView = view.findViewById(R.id.favorite_like_id)
+        // var share: ImageView = view.findViewById(R.id.favorite_share_id)
 
     }
 }

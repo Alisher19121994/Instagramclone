@@ -23,9 +23,8 @@ class ProfileAdapter(var profileFragment: FragmentActivity, var listOfPosts: Arr
         val posts = listOfPosts[position]
         if (holder is PostsViewHolder) {
 
-            // ((PostsViewHolder) holder).caption.setText(posts.getCaption());
-            val post = holder.post
-            Glide.with(profileFragment).load(posts.image).into(post)
+            holder.caption.text = posts.caption
+            Glide.with(profileFragment).load(posts.image).into( holder.post)
         }
     }
 

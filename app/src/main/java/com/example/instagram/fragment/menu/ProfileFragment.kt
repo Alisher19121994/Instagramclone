@@ -21,6 +21,7 @@ import com.example.instagram.model.User
 import com.example.instagram.network.authManager.AuthManager
 import com.example.instagram.network.databaseManager.DBPostsHandler
 import com.example.instagram.network.databaseManager.DBUserHandler
+import com.example.instagram.network.databaseManager.DBUsersHandler
 import com.example.instagram.network.databaseManager.DatabaseManager
 import com.example.instagram.network.storageManager.StorageHandler
 import com.example.instagram.network.storageManager.StorageManager
@@ -57,6 +58,41 @@ class ProfileFragment : BaseFragment() {
         logOut(view)
         loadUserInfo()
         loadMyPosts()
+        loadMyFollowing()
+        loadMyFollowers()
+    }
+
+    private fun loadMyFollowing() {
+        val authManager = AuthManager()
+        val uid = authManager.currentUser()!!.uid
+        val databaseManager = DatabaseManager()
+
+        databaseManager.loadFollowing(uid, object : DBUsersHandler {
+            override fun onSuccess(user: ArrayList<User>) {
+
+                profile_followings_size_id.text = user.size.toString()
+            }
+
+            override fun onError(exception: Exception) {
+
+            }
+        })
+    }
+    private fun loadMyFollowers() {
+        val authManager = AuthManager()
+        val uid = authManager.currentUser()!!.uid
+        val databaseManager = DatabaseManager()
+
+        databaseManager.loadFollowers(uid, object : DBUsersHandler {
+            override fun onSuccess(user: ArrayList<User>) {
+
+                profile_followers_size_id.text = user.size.toString()
+            }
+
+            override fun onError(exception: Exception) {
+
+            }
+        })
     }
 
     private fun loadMyPosts() {
