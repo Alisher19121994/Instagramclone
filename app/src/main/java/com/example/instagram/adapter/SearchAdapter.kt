@@ -12,7 +12,7 @@ import com.example.instagram.fragment.menu.SearchFragment
 import com.example.instagram.model.User
 import com.google.android.material.imageview.ShapeableImageView
 
-class SearchAdapter(var searchFragment: SearchFragment?, var listOfPosts: ArrayList<User>) :
+class SearchAdapter(var searchFragment: SearchFragment, var listOfPosts: ArrayList<User>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -30,21 +30,21 @@ class SearchAdapter(var searchFragment: SearchFragment?, var listOfPosts: ArrayL
             holder.follow.setOnClickListener {
 
                 if (!user.isFollowed) {
-                    holder.follow.text = searchFragment!!.getString(R.string.following)
+                    holder.follow.text = searchFragment.getString(R.string.following)
                 } else {
-                    holder.follow.text = searchFragment!!.getString(R.string.follow)
+                    holder.follow.text = searchFragment.getString(R.string.follow)
                 }
-                searchFragment!!.followOrUnfollow(user)
+                searchFragment.followOrUnfollow(user)
             }
 
             if (!user.isFollowed) {
-                holder.follow.text = searchFragment!!.getString(R.string.follow)
+                holder.follow.text = searchFragment.getString(R.string.follow)
             } else {
-                holder.follow.text = searchFragment!!.getString(R.string.following)
+                holder.follow.text = searchFragment.getString(R.string.following)
 
             }
 
-            Glide.with(searchFragment!!).load(user.userImage)
+            Glide.with(searchFragment).load(user.userImage)
                 .placeholder(R.drawable.defaultimage)
                 .error(R.drawable.defaultimage)
                 .into(holder.profile)

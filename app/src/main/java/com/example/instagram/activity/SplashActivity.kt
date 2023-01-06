@@ -6,7 +6,10 @@ import android.os.CountDownTimer
 import android.util.Log
 import android.view.WindowManager
 import com.example.instagram.R
+import com.example.instagram.network.PrefsManager
 import com.example.instagram.network.authManager.AuthManager
+import com.example.instagram.utils.Extension.toast
+import com.google.firebase.messaging.FirebaseMessaging
 
 
 /**
@@ -30,10 +33,11 @@ class SplashActivity : BaseActivity() {
 
     private fun initViews() {
         countDownTimer()
+        //loadFCMToken()
     }
 
     private fun countDownTimer() {
-         object : CountDownTimer(2000, 1000) {
+        object : CountDownTimer(2000, 1000) {
 
             override fun onTick(millisUntilFinished: Long) {}
 
@@ -47,5 +51,19 @@ class SplashActivity : BaseActivity() {
                 }
             }
         }.start()
+    }
+
+    private fun loadFCMToken() {
+        FirebaseMessaging.getInstance().token.addOnCompleteListener {
+            if (!it.isSuccessful) {
+                toast("Fetching FCM registration token is failed")
+                return@addOnCompleteListener
+            }
+
+            // Getting new FCM  registration token
+            // Saved it in locally to use later
+            val token = it.result
+            PrefsManager(this).storeDeviceToken(token.toString())
+        }
     }
 }

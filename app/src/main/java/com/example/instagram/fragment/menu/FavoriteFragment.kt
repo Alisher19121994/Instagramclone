@@ -1,5 +1,6 @@
 package com.example.instagram.fragment.menu
 
+import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +10,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.instagram.R
 import com.example.instagram.adapter.FavoriteAdapter
 import com.example.instagram.model.Posts
+import com.example.instagram.network.authManager.AuthManager
+import com.example.instagram.network.databaseManager.DBPostHandler
+import com.example.instagram.network.databaseManager.DBPostsHandler
+import com.example.instagram.network.databaseManager.DatabaseManager
+import com.example.instagram.utils.DialogListener
+import com.example.instagram.utils.Extension
 import kotlinx.android.synthetic.main.fragment_favorite.*
 import kotlinx.android.synthetic.main.fragment_favorite.view.*
 
@@ -17,6 +24,8 @@ import kotlinx.android.synthetic.main.fragment_favorite.view.*
  * In FavoriteFragment,user can check his/her liked posts
  */
 class FavoriteFragment : BaseFragment() {
+
+    lateinit var recyclerView: RecyclerView
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -29,23 +38,76 @@ class FavoriteFragment : BaseFragment() {
     }
 
     private fun initViews(view: View) {
-        view.recyclerView_favorite_id.layoutManager = LinearLayoutManager(activity)
+        recyclerView = view.findViewById(R.id.recyclerView_favorite_id)
+        recyclerView.layoutManager = LinearLayoutManager(activity)
 
-        refreshAdapter(view,loadData())
+        loadLikedFeeds()
+
     }
 
-    private fun refreshAdapter(view: View,posts: ArrayList<Posts>) {
-        val adapter = FavoriteAdapter(requireActivity(), posts)
-        view.recyclerView_favorite_id.adapter = adapter
+    private fun loadLikedFeeds() {
+        val dialog = Dialog(requireContext())
+        showLoading(dialog)
+
+        val authManager = AuthManager()
+        val uid = authManager.currentUser()!!.uid
+
+        val databaseManager = DatabaseManager()
+        databaseManager.loadLikedFeeds(uid, object : DBPostsHandler {
+
+            override fun onSuccess(posts: ArrayList<Posts>) {
+                dismissLoading(dialog)
+                refreshAdapter(posts)
+            }
+
+            override fun onError(exception: Exception) {
+                dismissLoading(dialog)
+            }
+        })
     }
 
-    private fun loadData(): ArrayList<Posts> {
-        val list: ArrayList<Posts> = ArrayList()
-        list.add(Posts("https://manchestersightseeingtours.com/wp-content/uploads/Manchester-United-Football-Ground-NCNManchester-Marketing-1-525x350.jpg"))
-        list.add(Posts("https://www.si.com/.image/c_limit%2Ccs_srgb%2Cq_auto:good%2Cw_700/MTkxMTk2ODg3MjA5MzU0NDc1/imago1011329909h.webp"))
-        list.add(Posts("https://i2-prod.manchestereveningnews.co.uk/incoming/article23387908.ece/ALTERNATES/s810/0_GettyImages-1384570282.jpg"))
-        list.add(Posts("https://i2-prod.football.london/incoming/article23788990.ece/ALTERNATES/s458/0_Marcus-Rashford.jpg"))
-        list.add(Posts("https://i2-prod.manchestereveningnews.co.uk/sport/football/football-news/article23692634.ece/ALTERNATES/s615b/0_GettyImages-1313311867.jpg"))
-        return list
+    fun likeOrUnlikePost(posts: Posts) {
+        val authManager = AuthManager()
+        val uid = authManager.currentUser()!!.uid
+        val databaseManager = DatabaseManager()
+
+        databaseManager.likeFeedPost(uid, posts)
+
+        loadLikedFeeds()
     }
+
+    fun showDeleteDialog(posts: Posts) {
+        Extension.dialogDeleteDouble(
+            requireContext(),
+            getString(R.string.delete),
+            object : DialogListener {
+                override fun onCallback(isDone: Boolean) {
+                    if (isDone)
+                        deletePost(posts)
+                }
+            })
+    }
+    fun deletePost(posts: Posts) {
+        val databaseManager = DatabaseManager()
+        databaseManager.deletePost(posts,object : DBPostHandler {
+
+            override fun onSuccess(posts: Posts) {
+
+                loadLikedFeeds()
+            }
+
+            override fun onError(exception: Exception) {
+
+            }
+        })
+    }
+
+
+    private fun refreshAdapter(posts: ArrayList<Posts>) {
+        val adapter = FavoriteAdapter(this, posts)
+        recyclerView.adapter = adapter
+    }
+
+
+
 }

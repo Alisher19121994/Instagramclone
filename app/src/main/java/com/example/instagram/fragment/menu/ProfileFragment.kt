@@ -78,6 +78,7 @@ class ProfileFragment : BaseFragment() {
             }
         })
     }
+
     private fun loadMyFollowers() {
         val authManager = AuthManager()
         val uid = authManager.currentUser()!!.uid
@@ -122,7 +123,7 @@ class ProfileFragment : BaseFragment() {
     }
 
     private fun refreshAdapter(posts: ArrayList<Posts>) {
-        val adapter = activity?.let { ProfileAdapter(it, posts) }
+        val adapter = ProfileAdapter(this, posts)
         recyclerView.adapter = adapter
     }
 

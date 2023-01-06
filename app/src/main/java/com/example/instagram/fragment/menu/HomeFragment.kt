@@ -14,8 +14,11 @@ import com.example.instagram.adapter.HomeAdapter
 import com.example.instagram.model.Posts
 import com.example.instagram.network.authManager.AuthManager
 import com.example.instagram.network.connections.HomeListener
+import com.example.instagram.network.databaseManager.DBPostHandler
 import com.example.instagram.network.databaseManager.DBPostsHandler
 import com.example.instagram.network.databaseManager.DatabaseManager
+import com.example.instagram.utils.DialogListener
+import com.example.instagram.utils.Extension
 import kotlinx.android.synthetic.main.fragment_home.view.*
 
 
@@ -40,7 +43,7 @@ class HomeFragment : BaseFragment() {
 
     override fun setUserVisibleHint(isVisibleToUser: Boolean) {
 
-        if (isVisibleToUser && feeds.size > 0){
+        if (isVisibleToUser && feeds.size > 0) {
             loadMyFeeds()
         }
     }
@@ -82,9 +85,46 @@ class HomeFragment : BaseFragment() {
 
     }
 
+    fun likeOrUnlikePost(posts: Posts) {
+        val authManager = AuthManager()
+        val uid = authManager.currentUser()!!.uid
+
+        val databaseManager = DatabaseManager()
+        databaseManager.likeFeedPost(uid, posts)
+
+
+    }
+
+    fun showDeleteDialog(posts: Posts) {
+        Extension.dialogDeleteDouble(
+            requireContext(),
+            getString(R.string.delete),
+            object : DialogListener {
+                override fun onCallback(isDone: Boolean) {
+                    if (isDone) {
+                        deletePost(posts)
+                    }
+                }
+            })
+    }
+
+    fun deletePost(posts: Posts) {
+        val databaseManager = DatabaseManager()
+        databaseManager.deletePost(posts, object : DBPostHandler {
+
+            override fun onSuccess(posts: Posts) {
+
+                  loadMyFeeds()
+            }
+
+            override fun onError(exception: Exception) {
+
+            }
+        })
+    }
 
     private fun refreshAdapter(posts: ArrayList<Posts>) {
-        val adapter = HomeAdapter(activity, posts)
+        val adapter = HomeAdapter(this, posts)
         recyclerView.adapter = adapter
     }
 

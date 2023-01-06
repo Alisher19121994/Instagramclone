@@ -10,6 +10,8 @@ class Posts {
     var fullname: String = ""
     var userImage: String = ""
 
+    var isLiked: Boolean = false
+
     constructor(image: String) {
         this.image = image
     }

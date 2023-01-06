@@ -46,7 +46,7 @@ dependencies {
 
 
 
-    // retrofit for networking
+    // Retrofit for networking
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
 
@@ -57,9 +57,10 @@ dependencies {
     // Firebase BoM
     implementation platform('com.google.firebase:firebase-bom:31.1.1')
 
-    // firebase settings
+    // Firebase settings
     implementation 'com.google.firebase:firebase-auth'
     implementation 'com.google.firebase:firebase-firestore:24.4.1'
     implementation 'com.google.firebase:firebase-database:20.1.0'
     implementation 'com.google.firebase:firebase-storage:20.1.0'
+    implementation 'com.google.firebase:firebase-messaging:23.1.1'
 }

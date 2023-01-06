@@ -8,10 +8,11 @@ import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.instagram.R
+import com.example.instagram.fragment.menu.ProfileFragment
 import com.example.instagram.model.Posts
 import com.google.android.material.imageview.ShapeableImageView
 
-class ProfileAdapter(var profileFragment: FragmentActivity, var listOfPosts: ArrayList<Posts>) :
+class ProfileAdapter(var profileFragment: ProfileFragment, var listOfPosts: ArrayList<Posts>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val view: View =

@@ -8,7 +8,7 @@ class User {
     var userImage: String = ""
 
     var deviceId = ""
-    var deviceType = ""
+    var deviceType = "A" // A -> "A"Android
     var deviceToken = ""
 
     var isFollowed: Boolean = false

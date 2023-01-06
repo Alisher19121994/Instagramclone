@@ -19,7 +19,7 @@ class AuthManager {
     fun signIn(email: String, password: String, authHandler: AuthHandler) {
         firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                val firebaseUserId: String = currentUser()!!.uid
+                val firebaseUserId = currentUser()!!.uid
                 authHandler.onSuccess(firebaseUserId)
             } else {
                 authHandler.onError(task.exception)
@@ -31,7 +31,7 @@ class AuthManager {
         firebaseAuth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    val firebaseUserId: String = currentUser()!!.uid
+                    val firebaseUserId = currentUser()!!.uid
                     authHandler.onSuccess(firebaseUserId)
                 } else {
                     authHandler.onError(task.exception)

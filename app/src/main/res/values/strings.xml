@@ -22,4 +22,8 @@
     <string name="followers">Followers</string>
     <string name="followings">Followings</string>
     <string name="following">Following…</string>
+    <string name="title">title</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+    <string name="caption">Caption</string>
 </resources>

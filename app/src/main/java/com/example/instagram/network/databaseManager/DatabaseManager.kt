@@ -64,8 +64,6 @@ class DatabaseManager {
                 val userImage: String? = it.getString("userImage")
 
                 val user = User(fullname.toString(), email.toString(), userImage.toString())
-                Log.d("DatabaseManager", "loadUser")
-
                 //val user = User(fullname!!, email!!, userImage!!)
                 user.uid = uid ///   connection
                 dbUserHandler.onSuccess(user)
@@ -124,8 +122,8 @@ class DatabaseManager {
                     val fullname = document.getString("fullname")
                     val postImage = document.getString("postImage")
                     val currentDate = document.getString("currentDate")
-                    //val isLiked = document.getString("isLiked")
-                    //if (isLiked ==null) isLiked =false
+                    var isLiked = document.getBoolean("isLiked")
+                    if (isLiked == null) isLiked = false
 
                     //   val post = Posts(id!!, caption!!, postImage!!)
                     val post = Posts(id.toString(), caption.toString(), postImage.toString())
@@ -133,7 +131,7 @@ class DatabaseManager {
                     post.fullname = fullname.toString()
                     post.userImage = userImage.toString()
                     post.currentDate = currentDate.toString()
-                    // post.isLiked = isLiked
+                    post.isLiked = isLiked
                     postsList.add(post)
 
                 }
@@ -160,8 +158,8 @@ class DatabaseManager {
                     val fullname = document.getString("fullname")
                     val postImage = document.getString("postImage")
                     val currentDate = document.getString("currentDate")
-                    //val isLiked = document.getString("isLiked")
-                    //if (isLiked ==null) isLiked =false
+                    var isLiked = document.getBoolean("isLiked")
+                    if (isLiked == null) isLiked = false
 
                     //val post = Posts(id!!,caption!!,postImage!!)
                     val post = Posts(id.toString(), caption.toString(), postImage.toString())
@@ -169,7 +167,7 @@ class DatabaseManager {
                     post.fullname = fullname.toString()
                     post.userImage = userImage.toString()
                     post.currentDate = currentDate.toString()
-                    // post.isLiked = isLiked
+                    post.isLiked = isLiked
                     postsList.add(post)
 
                 }
@@ -288,7 +286,7 @@ class DatabaseManager {
     private fun storeFeed(uid: String, posts: Posts) {
 
         val reference = database.collection(USER_PATH).document(uid).collection(FEED_PATH)
-        reference.document(posts.uid).set(posts)
+        reference.document(posts.id).set(posts)
     }
 
     fun removePostsToMyFeed(uid: String, to: User) {
@@ -309,7 +307,81 @@ class DatabaseManager {
     private fun removeFeed(uid: String, posts: Posts) {
 
         val reference = database.collection(USER_PATH).document(uid).collection(FEED_PATH)
-        reference.document(posts.uid).delete()
+        reference.document(posts.id).delete()
     }
 
+    fun likeFeedPost(uid: String, posts: Posts) {
+
+        // this is overall method,which is able to like every feeds post
+        database.collection(USER_PATH).document(uid).collection(FEED_PATH).document(posts.id)
+            .update("isLiked", posts.isLiked)
+
+        // this is my post that I can click my post and show into postFragment
+        if (uid == posts.uid)
+            database.collection(USER_PATH).document(uid).collection(POST_PATH).document(posts.id)
+                .update("isLiked", posts.isLiked)
+    }
+
+    fun loadLikedFeeds(uid: String, dbPostsHandler: DBPostsHandler) {
+
+        val reference = database.collection(USER_PATH).document(uid).collection(FEED_PATH)
+            .whereEqualTo("isLiked", true)
+        // take all likes (with -> "whereEqualTo")
+
+        reference.get().addOnCompleteListener {
+
+            val postsList = ArrayList<Posts>()
+
+            if (it.isSuccessful) {
+                for (document in it.result) {
+
+                    val id = document.getString("id")
+                    val userid = document.getString("userid")
+                    val caption = document.getString("caption")
+                    val userImage = document.getString("userImage")
+                    val fullname = document.getString("fullname")
+                    val postImage = document.getString("postImage")
+                    val currentDate = document.getString("currentDate")
+                    var isLiked = document.getBoolean("isLiked")
+                    if (isLiked == null) isLiked = false
+
+                    //val post = Posts(id!!,caption!!,postImage!!)
+                    val post = Posts(id.toString(), caption.toString(), postImage.toString())
+                    post.uid = userid.toString()
+                    post.fullname = fullname.toString()
+                    post.userImage = userImage.toString()
+                    post.currentDate = currentDate.toString()
+                    post.isLiked = isLiked
+                    postsList.add(post)
+
+                }
+                dbPostsHandler.onSuccess(postsList)
+
+            } else {
+                dbPostsHandler.onError(it.exception!!)
+            }
+        }
+    }
+
+    fun deletePost(posts: Posts, dbPostHandler: DBPostHandler) {
+
+        // removed from POST
+        val reference = database.collection(USER_PATH).document(posts.uid).collection(POST_PATH)
+        reference.document(posts.id).delete().addOnSuccessListener {
+
+            // if post removed OK  from POST and then did it on FEED too !
+            val reference2 =
+                database.collection(USER_PATH).document(posts.uid).collection(FEED_PATH)
+            reference2.document(posts.id).delete().addOnSuccessListener {
+
+                dbPostHandler.onSuccess(posts)
+
+            }.addOnFailureListener {
+                dbPostHandler.onError(it)
+            }
+        }.addOnFailureListener {
+            dbPostHandler.onError(it)
+        }
+
+    }
 }

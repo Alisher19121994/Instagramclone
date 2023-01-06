@@ -14,6 +14,7 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import com.example.instagram.R
@@ -132,6 +133,8 @@ class UploadFragment : BaseFragment() {
 
             uploadThisPostPhoto(getCaption, pickedPhoto!!)
 
+        } else if (getCaption.isEmpty()) {
+            Toast.makeText(requireContext(), "Write a caption", Toast.LENGTH_SHORT).show()
         }
     }
 

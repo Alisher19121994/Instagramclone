@@ -81,6 +81,7 @@ class SearchFragment : BaseFragment() {
     private fun loadData() {
         val dialog = Dialog(requireContext())
         showLoading(dialog)
+
         val authManager = AuthManager()
         val uid = authManager.currentUser()!!.uid
 
@@ -95,10 +96,10 @@ class SearchFragment : BaseFragment() {
                 getDatabaseManager.loadFollowing(uid,object : DBUsersHandler{
 
                     // my loadFollowing
-                    override fun onSuccess(following: ArrayList<User>) {
+                    override fun onSuccess(followings: ArrayList<User>) {
                         dismissLoading(dialog)
                         serverData.clear()
-                        serverData.addAll(mergedUser(uid, user, following))
+                        serverData.addAll(mergedUser(uid, user, followings))
                         refreshAdapter(serverData)
 
                     }
@@ -120,17 +121,16 @@ class SearchFragment : BaseFragment() {
         val items = ArrayList<User>()
 
         for (indexOfUser in user){
-            val getUser = indexOfUser  ///  check it out!
 
             for (indexOfFollowing in following){
 
-                if (indexOfUser.uid == indexOfFollowing.uid){
-                    getUser.isFollowed = true
+                if (indexOfUser.uid == indexOfFollowing.uid) {
+                    indexOfUser.isFollowed = true
                     break
                 }
             }
-            if (uid != getUser.uid){
-                items.add(getUser)
+            if (uid != indexOfUser.uid){
+                items.add(indexOfUser)
             }
         }
         return items

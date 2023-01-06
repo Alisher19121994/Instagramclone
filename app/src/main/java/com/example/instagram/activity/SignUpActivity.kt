@@ -7,10 +7,12 @@ import android.widget.TextView
 import androidx.appcompat.widget.AppCompatButton
 import com.example.instagram.R
 import com.example.instagram.model.User
+import com.example.instagram.network.PrefsManager
 import com.example.instagram.network.authManager.AuthHandler
 import com.example.instagram.network.authManager.AuthManager
 import com.example.instagram.network.databaseManager.DBUserHandler
 import com.example.instagram.network.databaseManager.DatabaseManager
+import com.example.instagram.utils.Extension
 import com.example.instagram.utils.Extension.toast
 
 
@@ -49,27 +51,23 @@ class SignUpActivity : BaseActivity() {
             val textEmail = email.text.toString().trim()
             val textPassword = password.text.toString().trim()
 
-            if (textFullname.isEmpty()) {
+            if (textFullname.isNotEmpty() && textEmail.isNotEmpty() && textPassword.isNotEmpty()) {
+                val user = User(textFullname, textEmail, textPassword,"")
+                firebaseSignUp(user)
+            } else if (textFullname.isEmpty()) {
                 toast("Fullname must NOT be empty!")
             } else if (textEmail.isEmpty()) {
                 toast("Email must NOT be empty!")
             } else if (textPassword.isEmpty()) {
                 toast("Password must NOT be empty!")
-            } else {
-                if (textFullname.isNotEmpty() && textEmail.isNotEmpty() && textPassword.isNotEmpty()) {
-                    val user = User(textFullname, textEmail, textPassword)
-                    firebaseSignUp(user)
-                }
             }
         }
+
         val buttonSignIn: TextView = findViewById(R.id.sign_up_button_sign_in_id)
         buttonSignIn.setOnClickListener { finish() }
     }
 
     private fun firebaseSignUp(user: User) {
-
-        val dialog = Dialog(this)
-        showLoading(dialog)
         val authManager = AuthManager()
 
         authManager.signUp(user.emailAddress, user.password, object : AuthHandler {
@@ -78,23 +76,34 @@ class SignUpActivity : BaseActivity() {
                 user.uid = uId // connection
 
                 // saved database in onSuccess
-                val databaseManager = DatabaseManager()
-                databaseManager.storeUser(user, object : DBUserHandler {
-
-                    override fun onSuccess(user: User?) {
-                        dismissLoading(dialog)
-                        openMainActivity(context)
-                    }
-
-                    override fun onError(exception: Exception) {
-                        dismissLoading(dialog)
-                    }
-                })
+                storeUserToDatabase(user)
                 toast("Signed Up")
             }
 
             override fun onError(exception: Exception?) {
                 toast("Failed")
+            }
+        })
+    }
+
+    private fun storeUserToDatabase(user: User) {
+
+        val dialog = Dialog(this)
+        showLoading(dialog)
+
+        //  user.deviceToken = PrefsManager(this).loadDeviceToken()!!
+        //    user.deviceId = Extension.getDevice(this)
+
+        val databaseManager = DatabaseManager()
+        databaseManager.storeUser(user, object : DBUserHandler {
+
+            override fun onSuccess(user: User?) {
+                dismissLoading(dialog)
+                openMainActivity(context)
+            }
+
+            override fun onError(exception: Exception) {
+                dismissLoading(dialog)
             }
         })
     }
